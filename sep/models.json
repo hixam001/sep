@@ -1,0 +1,350 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RO-Plant Models",
+  "type": "object",
+  "definitions": {
+    "BaseUser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "phoneNo": {
+          "type": "string"
+        },
+        "cnic": {
+          "type": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "aboutMe": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "Representative": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "representativeID": {
+              "type": "string"
+            },
+            "ntn": {
+              "type": "string"
+            },
+            "authorizationLevel": {
+              "type": "string"
+            },
+            "representativeBalance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "StockManager": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "authorizationLevel": {
+              "type": "string"
+            },
+            "vendorBalance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "ProductionManager": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "ntn": {
+              "type": "string"
+            },
+            "eLink": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "authorizationLevel": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "Vendor": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "vendorBalance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "LabourWorker": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "authorizationLevel": {
+              "type": "string"
+            },
+            "labourBalance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "Customer": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseUser"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "customerID": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "customerBalance": {
+              "type": "number"
+            },
+            "clientImagePath": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "Inventory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "unitPrice": {
+          "type": "number"
+        }
+      }
+    },
+    "EquipmentTransaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "item": {
+          "$ref": "#/definitions/Inventory"
+        },
+        "requester": {
+          "$ref": "#/definitions/StockManager"
+        },
+        "vendorProvider": {
+          "$ref": "#/definitions/Vendor"
+        },
+        "labourProvider": {
+          "$ref": "#/definitions/LabourWorker"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "cost": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "transactionDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effectiveDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Production": {
+      "type": "object",
+      "properties": {
+        "productionID": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "batchNumber": {
+          "type": "integer"
+        },
+        "manager": {
+          "$ref": "#/definitions/ProductionManager"
+        }
+      }
+    },
+    "Process": {
+      "type": "object",
+      "properties": {
+        "processID": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "sequenceOrder": {
+          "type": "integer"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "production": {
+          "$ref": "#/definitions/Production"
+        }
+      }
+    },
+    "RefillRequest": {
+      "type": "object",
+      "properties": {
+        "requestID": {
+          "type": "string"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "representative": {
+          "$ref": "#/definitions/Representative"
+        },
+        "bottleCount": {
+          "type": "integer"
+        },
+        "totalAmount": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "paymentStatus": {
+          "type": "string"
+        },
+        "transactionDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effectiveDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Bill": {
+      "type": "object",
+      "properties": {
+        "billID": {
+          "type": "string"
+        },
+        "refillRequest": {
+          "$ref": "#/definitions/RefillRequest"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "representative": {
+          "$ref": "#/definitions/Representative"
+        },
+        "totalAmount": {
+          "type": "number"
+        },
+        "billingDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "paymentStatus": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

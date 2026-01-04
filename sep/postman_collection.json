@@ -1,0 +1,414 @@
+{
+  "info": {
+    "name": "RO-Plant API - Full E2E",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"cnic\": \"12345-6789012-3\",\n  \"password\": \"password\",\n  \"role\": \"REPRESENTATIVE\",\n  \"address\": \"123 St\",\n  \"phoneNo\": \"03001234567\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Customer - Upload Image",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/customers/{{customerId}}/image",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "customers",
+            "{{customerId}}",
+            "image"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cnic\": \"12345-6789012-3\",\n  \"password\": \"password\",\n  \"role\": \"REPRESENTATIVE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Inventory - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "inventory"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Inventory - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bottle\",\n  \"description\": \"5L water bottle\",\n  \"quantity\": 100,\n  \"unitPrice\": 50.0\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "inventory"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Inventory - Create Transaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"PROVIDE\",\n  \"requesterId\": \"{{requesterId}}\",\n  \"itemId\": \"{{itemId}}\",\n  \"providerId\": \"{{providerId}}\",\n  \"quantity\": 10\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/transactions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "inventory",
+            "transactions"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Inventory - Complete Transaction",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/inventory/transactions/{{transactionId}}/complete",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "inventory",
+            "transactions",
+            "{{transactionId}}",
+            "complete"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Production - Start",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/production/start?managerId={{managerId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "production",
+            "start"
+          ],
+          "query": [
+            {
+              "key": "managerId",
+              "value": "{{managerId}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Production - Update Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"COMPLETED\" }"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/production/{{productionId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "production",
+            "{{productionId}}",
+            "status"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Production - List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/production",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "production"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Sales - Create Refill",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"bottleCount\": 2\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/sales/refill",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "refill"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Sales - Pay Refill",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/sales/{{refillId}}/pay?representativeId={{representativeId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "{{refillId}}",
+            "pay"
+          ],
+          "query": [
+            {
+              "key": "representativeId",
+              "value": "{{representativeId}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Representative - Pay Vendor",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/representatives/{{repId}}/pay/vendor/{{vendorId}}?amount={{amount}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "representatives",
+            "{{repId}}",
+            "pay",
+            "vendor",
+            "{{vendorId}}"
+          ],
+          "query": [
+            {
+              "key": "amount",
+              "value": "{{amount}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Representative - Pay Labour",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/representatives/{{repId}}/pay/labour/{{labourId}}?amount={{amount}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "representatives",
+            "{{repId}}",
+            "pay",
+            "labour",
+            "{{labourId}}"
+          ],
+          "query": [
+            {
+              "key": "amount",
+              "value": "{{amount}}"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "managerId",
+      "value": ""
+    },
+    {
+      "key": "productionId",
+      "value": ""
+    },
+    {
+      "key": "itemId",
+      "value": ""
+    },
+    {
+      "key": "requesterId",
+      "value": ""
+    },
+    {
+      "key": "providerId",
+      "value": ""
+    },
+    {
+      "key": "transactionId",
+      "value": ""
+    },
+    {
+      "key": "customerId",
+      "value": ""
+    },
+    {
+      "key": "refillId",
+      "value": ""
+    },
+    {
+      "key": "representativeId",
+      "value": ""
+    },
+    {
+      "key": "repId",
+      "value": ""
+    },
+    {
+      "key": "vendorId",
+      "value": ""
+    },
+    {
+      "key": "labourId",
+      "value": ""
+    },
+    {
+      "key": "amount",
+      "value": ""
+    }
+  ]
+}

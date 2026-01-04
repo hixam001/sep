@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: RO-Plant API
+  version: 1.0.0
+  description: API for RO-Plant management backend (inventory, production, sales, representatives)
+servers:
+  - url: /api
+
+paths:
+  /auth/login:
+    post:
+      summary: Login with CNIC, password and role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cnic:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+              required: [cnic, password, role]
+      responses:
+        '200':
+          description: Authenticated user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseUser'
+        '401':
+          description: Invalid credentials
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                address: { type: string }
+                phoneNo: { type: string }
+                cnic: { type: string }
+                password: { type: string }
+                role: { type: string }
+                ntn: { type: string }
+                authorizationLevel: { type: string }
+                clientImagePath: { type: string }
+                aboutMe: { type: string }
+              required: [name, cnic, password, role]
+      responses:
+        '200':
+          description: Registered user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseUser'
+        '400':
+          description: Registration failed
+
+  /inventory:
+    get:
+      summary: Get all inventory items
+      responses:
+        '200':
+          description: List of inventory
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+    post:
+      summary: Create inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+      responses:
+        '201':
+          description: Created inventory
+
+  /inventory/transactions:
+    post:
+      summary: Create equipment transaction (PROVIDE or CHANGE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [PROVIDE, CHANGE]
+                requesterId:
+                  type: string
+                itemId:
+                  type: string
+                providerId:
+                  type: string
+                quantity:
+                  type: integer
+              required: [type, requesterId, itemId, providerId, quantity]
+      responses:
+        '200':
+          description: Created transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentTransaction'
+
+  /inventory/transactions/{id}/complete:
+    post:
+      summary: Mark transaction complete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Completed transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentTransaction'
+
+  /production/start:
+    post:
+      summary: Start a production run
+      parameters:
+        - in: query
+          name: managerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Production started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Production'
+
+  /production/{id}/status:
+    patch:
+      summary: Update production status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Updated production
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Production'
+
+  /production:
+    get:
+      summary: List productions
+      responses:
+        '200':
+          description: List of productions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Production'
+
+  /sales/refill:
+    post:
+      summary: Create a refill request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                bottleCount:
+                  type: integer
+              required: [customerId, bottleCount]
+      responses:
+        '200':
+          description: Refill request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefillRequest'
+
+  /sales/{id}/pay:
+    post:
+      summary: Pay for a refill request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: representativeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Refill request updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefillRequest'
+
+  /representatives/{repId}/pay/vendor/{vendorId}:
+    post:
+      summary: Representative pays a vendor
+      parameters:
+        - in: path
+          name: repId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: vendorId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: amount
+          required: true
+          schema: { type: number, format: double }
+      responses:
+        '200':
+          description: Payment success message
+
+  /representatives/{repId}/pay/labour/{labourId}:
+    post:
+      summary: Representative pays a labour worker
+      parameters:
+        - in: path
+          name: repId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: labourId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: amount
+          required: true
+          schema: { type: number, format: double }
+      responses:
+        '200':
+          description: Payment success message
+
+  /customers/{id}/image:
+    post:
+      summary: Upload customer image for identity verification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+
+components:
+  schemas:
+    BaseUser:
+      type: object
+      properties:
+        name: { type: string }
+        address: { type: string }
+        phoneNo: { type: string }
+        cnic: { type: string }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        aboutMe: { type: string }
+        password: { type: string }
+        role: { type: string }
+
+    Representative:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            representativeID: { type: string }
+            ntn: { type: string }
+            authorizationLevel: { type: string }
+            representativeBalance: { type: number, format: double }
+
+    StockManager:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            id: { type: string }
+            authorizationLevel: { type: string }
+            vendorBalance: { type: number, format: double }
+
+    ProductionManager:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            id: { type: string }
+            ntn: { type: string }
+            eLink: { type: string }
+            status: { type: string }
+            authorizationLevel: { type: string }
+
+    Vendor:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            id: { type: string }
+            vendorBalance: { type: number, format: double }
+
+    LabourWorker:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            id: { type: string }
+            authorizationLevel: { type: string }
+            labourBalance: { type: number, format: double }
+
+    Inventory:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number, format: double }
+
+    EquipmentTransaction:
+      type: object
+      properties:
+        id: { type: string }
+        item: { $ref: '#/components/schemas/Inventory' }
+        requester: { $ref: '#/components/schemas/StockManager' }
+        vendorProvider: { $ref: '#/components/schemas/Vendor' }
+        labourProvider: { $ref: '#/components/schemas/LabourWorker' }
+        quantity: { type: integer }
+        cost: { type: number, format: double }
+        type: { type: string }
+        status: { type: string }
+        transactionDate: { type: string, format: date-time }
+        effectiveDate: { type: string, format: date-time }
+
+    Production:
+      type: object
+      properties:
+        productionID: { type: string }
+        status: { type: string }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+        batchNumber: { type: integer }
+        manager: { $ref: '#/components/schemas/ProductionManager' }
+
+    Process:
+      type: object
+      properties:
+        processID: { type: string }
+        name: { type: string }
+        description: { type: string }
+        sequenceOrder: { type: integer }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+        production: { $ref: '#/components/schemas/Production' }
+
+    RefillRequest:
+      type: object
+      properties:
+        requestID: { type: string }
+        customer: { $ref: '#/components/schemas/Customer' }
+        representative: { $ref: '#/components/schemas/Representative' }
+        bottleCount: { type: integer }
+        totalAmount: { type: number, format: double }
+        status: { type: string }
+        paymentStatus: { type: string }
+        transactionDate: { type: string, format: date-time }
+        effectiveDate: { type: string, format: date-time }
+
+    Bill:
+      type: object
+      properties:
+        billID: { type: string }
+        refillRequest: { $ref: '#/components/schemas/RefillRequest' }
+        customer: { $ref: '#/components/schemas/Customer' }
+        representative: { $ref: '#/components/schemas/Representative' }
+        totalAmount: { type: number, format: double }
+        billingDate: { type: string, format: date-time }
+        paymentStatus: { type: string }
+
+    Customer:
+      allOf:
+        - $ref: '#/components/schemas/BaseUser'
+        - type: object
+          properties:
+            customerID: { type: string }
+            status: { type: string }
+            customerBalance: { type: number, format: double }
+            clientImagePath: { type: string }
+
+  responses:
+    Unauthorized:
+      description: Authentication failed
+    BadRequest:
+      description: Invalid input
